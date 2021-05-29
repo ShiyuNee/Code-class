@@ -1,0 +1,32 @@
+#include<iostream>
+using namespace std;
+#define N 10000
+#define inf 99999999
+int f[N][N];
+
+
+int main()
+{
+    string str;
+    getline(cin , str);
+    int n = str.size();
+    for(int i = 0 ; i < n ; i++)
+        f[i][i] = 1;
+    for(int len = 2 ; len <= n ; len++){
+        for(int i = 0 ; i <= n - len; i++){
+            int r = i + len - 1;
+            f[i][r] = inf;
+            if((str[i] == '(' && str[r] == ')') || (str[i] == '[' && str[r] == ']'))
+                if(i + 1 > r - 1) f[i][r] = 0;
+                else f[i][r] = min(f[i][r] , f[i + 1][r - 1]);
+            if((str[i] == '(' && str[r] != ')') || (str[i] == '[' && str[r] != ']'))
+                f[i][r] = min(f[i][r] , f[i + 1][r] + 1);
+            if((str[i] != '(' && str[r] == ')') || (str[i] != '[' && str[r] == ']'))
+                f[i][r] = min(f[i][r] , f[i][r - 1] + 1);
+            for(int k = i ; k < r ; k++){
+				f[i][r] = min(f[i][r] , f[i][k] + f[k + 1][r]);
+			}
+        }
+    }
+    cout << f[0][n - 1];
+}
