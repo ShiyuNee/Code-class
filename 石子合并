@@ -1,0 +1,55 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+#define N 1005
+#define ll long long
+int n;
+ll stone[2 * N] , sum[N] , f[N][N] , subStone[N] , f2[N][N];
+
+int main()
+{
+    cin >> n;
+    ll ans_min = 1e15 , ans_max = -1;
+
+    for(int i = 1 ; i <= n ; i++)
+        cin >> stone[i];
+    
+    for(int i = 1 ; i < n ; i++)
+        stone[i + n] = stone[i];
+    
+    int begin = 1;
+    while(begin <= n){
+        memset(sum , 0 , sizeof(sum));
+        memset(f , 0 , sizeof(f));
+        memset(f2 , 0 , sizeof(f2));
+        int end = begin + n - 1;
+
+        int step = 0;
+        subStone[0] = 0;
+        for(int i = begin ; i <= end ; i++){
+            subStone[++step] = stone[i];
+            sum[step] = sum[step - 1] + subStone[step];
+        }
+    
+        for(int len = 2 ; len <= n ; len++){
+            for(int i = 1; i <= n - len + 1 ; i++){
+                int l = i , r = i + len - 1;
+                long long add_min = 1e15 , add_max = -1;
+
+                for(int k = l ; k < r ; k++){
+                    add_min = min(f[l][k] + f[k + 1][r] , add_min);
+                    add_max = max(f2[l][k] + f2[k + 1][r] , add_max);//这里一开始少个二，少犯这种错误
+                }
+
+                 f[l][r] = sum[r] - sum[l - 1] + add_min;
+                 f2[l][r] = sum[r] - sum[l - 1] + add_max;
+            }
+        }
+        begin++;
+        ans_min = min(ans_min , f[1][n]);
+        ans_max = max(ans_max , f2[1][n]);
+   
+    }
+    cout << ans_min << endl;
+    cout << ans_max << endl;
+}
